@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>React</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react-dom.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.38/browser.min.js"></script>
+            <script type="text/javascript" src="frameworkjs.js"></script>
+            <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
+
+    </head>
+    <body>
+        <div class="container" id="app"></div>
+        <script type="text/babel">
+            // button
+            class BootstrapButton extends React.Component {
+                constructor(props) {
+                    super(props);
+                    // This binding is necessary to make `this` work in the callback
+                    this.handleClick = this.handleClick.bind(this);
+                }
+                handleClick() {
+                    //console.log('BootstrapButton click!!');
+                    this.props.clickFn();
+                }
+                render() {
+                    return React.createElement(
+                        'button'
+                        , {
+                            type:'button'
+                            , className:'btn btn-lg ' + this.props.btnclass + ' btn-block'
+                            , onClick : this.handleClick
+                        }
+                        , this.props.name
+                    )
+                }
+            }
+            
+            // header
+            class HeaderBlock extends React.Component {
+                render() {
+                    return (
+                        <div className="row">
+                            <div className="col-md-4">
+                                <BootstrapButton name="規則" btnclass="btn-default" clickFn={this.props.ruleClick} />
+                            </div>
+                            <div className="col-md-4 text-center"><h4>猜數字</h4></div>
+                            <div className="col-md-4">
+                                <BootstrapButton name="重置" btnclass="btn-info" clickFn={this.props.restartClick} />
+                            </div>
+                        </div>
+                    );
+                }
+            }
+            
+            // info
+            class InfoBlock extends React.Component {
+                render() {
+                    return (
+                        <div className="row">
+                            <div className="row">
+                                <div className="col-md-5 text-center">{this.props.min}~{this.props.max}</div>
+                                <div className="col-md-7"><span className='red blink_me'>{this.props.info}</span></div>
+                            </div>
+                            <div className="row">
+                                <div className="col-md-12 text-center">{this.props.guess}</div>
+                            </div>
+                        </div>
+                    );
+                }
+            }
+            
+            // numBlock
+            class NumBlock extends React.Component {
+                constructor(props) {
+                    super(props);
+                    // This binding is necessary to make `this` work in the callback
+                    //this.numClick = this.numClick.bind(this);
+                }
+                numClick(num){
+                    this.props.numClick(num);
+                }
+                render() {
+                    return (
+                        <div className="row">
+                            <div className="col-md-1">&nbsp;</div>
+                            <div className="col-md-1"><BootstrapButton name="1" btnclass="btn-default" clickFn={this.numClick.bind(this, 1)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="2" btnclass="btn-default" clickFn={this.numClick.bind(this, 2)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="3" btnclass="btn-default" clickFn={this.numClick.bind(this, 3)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="4" btnclass="btn-default" clickFn={this.numClick.bind(this, 4)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="5" btnclass="btn-default" clickFn={this.numClick.bind(this, 5)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="6" btnclass="btn-default" clickFn={this.numClick.bind(this, 6)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="7" btnclass="btn-default" clickFn={this.numClick.bind(this, 7)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="8" btnclass="btn-default" clickFn={this.numClick.bind(this, 8)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="9" btnclass="btn-default" clickFn={this.numClick.bind(this, 9)}/></div>
+                            <div className="col-md-1"><BootstrapButton name="0" btnclass="btn-default" clickFn={this.numClick.bind(this, 0)}/></div>
+                            <div className="col-md-1">&nbsp;</div>
+                        </div>
+                    );
+                }
+            }
+            
+            // otherBlock
+            class OtherBlock extends React.Component {
+                render() {
+                    return (
+                        <div className="row">
+                            <div className="col-md-6">
+                                <BootstrapButton name="reset" btnclass="btn-success" clickFn={this.props.resetClick}/>
+                            </div>
+                            <div className="col-md-6">
+                                <BootstrapButton name="go" btnclass="btn-danger" clickFn={this.props.goClick}/>
+                            </div>
+                        </div>
+                    );
+                }
+            }
+            
+            var OtherBlockClass = React.createClass({
+                render: function () {
+                    return (
+                        <div className="row">
+                            <div className="col-md-6">
+                                <BootstrapButton name="reset" btnclass="btn-success" clickFn={this.props.resetClick}/>
+                            </div>
+                            <div className="col-md-6">
+                                <BootstrapButton name="go" btnclass="btn-danger" clickFn={this.props.goClick}/>
+                            </div>
+                        </div>
+                    );
+                }
+            })
+            
+            // app
+            class App extends React.Component {
+                constructor(props) {
+                    super(props);
+                    // This binding is necessary to make `this` work in the callback
+                    this.handleRuleClick = this.handleRuleClick.bind(this);
+                    this.handleRestartClick = this.handleRestartClick.bind(this);
+                    
+                    this.handleNumClick = this.handleNumClick.bind(this);
+                    this.handleResetClick = this.handleResetClick.bind(this);
+                    this.handleGoClick = this.handleGoClick.bind(this);
+                    this.setInfoBlockInfo = this.setInfoBlockInfo.bind(this);
+                    
+                    this.resetData = this.resetData.bind(this);
+                    
+                    this.resetData();
+                    this.timer;
+                    
+                    common.resetTargetNum();
+                }
+                
+                handleRuleClick() {
+                    // 規則
+                    //console.log('App handleRuleClick!!');
+                    alert('Rule');
+                }
+                handleRestartClick() {
+                    // 重置
+                    //console.log('App handleRestartClick!!');
+                    
+                    this.resetData();
+                    this.forceUpdate();
+                }
+                handleNumClick(num){
+                    // 數字鍵按鈕
+                    //console.log('App handleNumClick!!('+num+')');
+                    
+                    if(true == this.run){
+                        this.info = '';
+                        clearTimeout(this.timer);
+                        // 將數字寫入 num 區塊
+                        if(config.guessNum == this.guess)
+                        {
+                            // 未寫入值
+                            this.guess = parseInt(num);
+                        }
+                        else if( 10 > this.guess )
+                        {
+                            // 只有一位數
+                            this.guess =  parseInt(this.guess * 10) + parseInt(num);
+                        }
+                        else
+                        {
+                            // 兩位數
+                            this.guess = Math.floor( this.guess % 10 ) * 10 + parseInt(num);
+                        }
+                        this.forceUpdate();
+                    }
+                    
+                    
+                }
+                handleResetClick(){
+                    // 重設
+                    //console.log('App handleResetClick!!');
+                    if(true == this.run){
+                        this.guess = config.guessNum;
+                        this.forceUpdate();
+                    }
+                }
+                handleGoClick(){
+                    // 開猜
+                    //console.log('App handleGoClick!!');
+                    
+                    if(true == this.run){
+                        if( this.guess == config.targetNum )
+                        {
+                            // 中，
+                            this.info = '中啦';
+                            this.run = false;
+                        }
+                        else if( config.targetNum < this.guess && this.guess < this.max )
+                        {
+                            // 大數區間
+                            this.max = this.guess;
+                            this.guess = config.guessNum;
+                        }
+                        else if( this.min < this.guess && this.guess < config.targetNum )
+                        {
+                            // 小數區間
+                            this.min = this.guess;
+                            this.guess = config.guessNum;
+                        }
+                        else
+                        {
+                            // 區間錯誤
+                            this.info = '區間錯誤';
+                            clearTimeout(this.timer);
+                            this.timer = setTimeout(
+                                this.setInfoBlockInfo, 2000
+                            );
+                            this.guess = config.guessNum;
+                        }
+                        this.forceUpdate();
+                    }
+                    
+                }
+                setInfoBlockInfo(){
+                    this.info = '';
+                    this.forceUpdate();
+                }
+                resetData(){
+                    this.min = config.minNum;
+                    this.max = config.maxNum;
+                    this.info = '';
+                    this.guess = config.guessNum;
+                    this.run = true;
+                }
+                render() {
+                    return (
+                        <div className="container">
+                            <div className="row well"><HeaderBlock ruleClick={this.handleRuleClick} restartClick={this.handleRestartClick} /></div>
+                            <div className="row well"><InfoBlock min={this.min} max={this.max} info={this.info} guess={this.guess} /></div>
+                            <div className="row well"><NumBlock numClick={this.handleNumClick}/></div>
+                            <div className="row well"><OtherBlockClass resetClick={this.handleResetClick} goClick={this.handleGoClick}/></div>
+                        </div>
+                    );
+                }
+            }
+            ReactDOM.render(
+                <App />,
+                document.getElementById('app')
+            );
+            
+        </script>
+    </body>
+</html>

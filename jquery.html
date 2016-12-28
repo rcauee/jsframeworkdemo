@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JQ</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+        <style type="text/css">
+            .hidden{
+                display: none;
+            }
+            .lose{
+                color: red;
+            }
+            .win{
+                color: blue;
+            }
+            .black{
+                color: black;
+            }
+            .imgMaxSize{
+                max-width: 100%;
+                max-height: 300px;
+            }
+        </style>
+
+    </head>
+    <body>
+        <div class="container">
+            <div class="container">
+                <div class="row well" id="headerBlock">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-lg btn-default btn-block">規則</button>
+                        </div>
+                        <div class="col-md-4 text-center"><h4>猜數字</h4></div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-lg btn-info btn-block">重置</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row well" id="infoBlock">
+                    <div class="row">
+                        <div class="col-md-5 text-center"><span>min</span>~<span>max</span></div>
+                        <div class="col-md-7"><span id="info"></span></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center"><span>num</span></div>
+                    </div>
+                </div>
+                <div class="row well" id="numBlock">
+                    <div class="row">
+                        <div class="col-md-1">&nbsp;</div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">1</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">2</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">3</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">4</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">5</button>
+                        </div>
+                        <div class="col-md-1">&nbsp;</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">&nbsp;</div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">6</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">7</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">8</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">9</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-lg btn-default btn-block">0</button>
+                        </div>
+                        <div class="col-md-1">&nbsp;</div>
+                    </div>
+                </div>
+                <div class="row well" id="otherBlock">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-lg btn-success btn-block">reset</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-lg btn-danger btn-block">go</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            /*
+            資料初始化
+                呼叫 API 取得玩家金錢
+                畫面顯示初始化
+                綁定物件事件
+            下注流程
+                發牌，呼叫 API server 選出兩張牌更新至畫面，變動畫面(隱藏發牌區塊 顯示下注區塊)
+                下注，呼叫 API 送入下注額，
+                    server 選出第三張判斷勝負，異動玩家金錢資料，回傳 第三張牌、玩家金錢
+                    更新第三張牌，顯示勝負結果，變動畫面(隱藏下注區塊)，更新 JS 玩家金錢
+                停頓 n 秒恢復可發牌流程，變動畫面(復原牌面、顯示發牌區塊)
+            加錢流程
+                呼叫 API 增加金錢，回傳 玩家金錢，更新 JS 玩家金錢
+            */
+
+            /*
+            資料初始化
+                渲染畫面
+
+                掛勾事件
+                
+                    
+
+                呼叫 API 取得要猜的數字
+
+            */
+
+            // 資料初始化
+            var config = {
+                money : 2000,
+                addMoney : 5000,
+                joinMoney : 0,
+                betMoneyAry : [100, 200, 500, 1000, 2000, 5000],
+                cardImgBase : 'http://rcauee.mooo.com/assets/img/',
+                cardImg : 'http://rcauee.mooo.com/assets/img/' + 'poker/',
+                cardImgType : 'jpg',
+            }
+
+            var common = {
+
+                getMoney : function()
+                {
+                    return config.money;
+                },
+                showMoney : function()
+                {
+                    $('#xxx').text(config.money);
+                },
+                // 投幣
+                coinMoney : function()
+                {
+                    common.addMoney( config.addMoney, '大戶加錢,投幣!!');
+                },
+                // 參加費用
+                payJoinMoney : function()
+                {
+                    common.deductionMoney( config.joinMoney, '參加費');
+                },
+                // 加錢
+                addMoney : function(money, reason)
+                {
+                    if('number' == typeof money){
+                        config.money += money;
+
+                        common.setInfo( 'win', reason + ',增加 ' + money );
+
+                        common.showMoney();
+                    }
+                },
+                // 扣錢
+                deductionMoney : function(money, reason)
+                {
+                    if('number' == typeof money & money > 0){
+                        config.money -= money;
+
+                        common.setInfo( 'lose', reason + ',扣除 ' + money );
+
+                        common.showMoney();
+                    }
+                },
+                // 發卡
+                getOneCard : function()
+                {
+                    // 花色
+                    var min = 1, max = 4;
+                    var colorNumber = Math.floor(Math.random()*(max-min+1)+min);
+                    var colorAry = {1:'C', 2:'D', 3:'H', 4:'S'}
+                    var color = colorAry[colorNumber];
+
+                    // 號碼
+                    var min = 1, max = 13;
+                    var number = Math.floor(Math.random()*(max-min+1)+min);
+
+                    return '' + color + number;
+                },
+                // 顯示卡片
+                showCard : function(blockId, cardId)
+                {
+                    var cardImgHtml = "<img src='" + config.cardImg + cardId + "." + config.cardImgType + "' class='imgMaxSize'>"
+                    $('#'+blockId)
+                    .attr('cardInfo', cardId)
+                    .html(cardImgHtml);
+                },
+                // 重置卡片
+                resetCard : function(blockId)
+                {
+                    $('#'+blockId)
+                    .attr('cardInfo', '')
+                    .text('?');
+                },
+
+                // 顯示區塊
+                showBlock : function(itemJqueryObj){
+                    if( true == itemJqueryObj.hasClass('hidden') ){
+                        itemJqueryObj.removeClass('hidden');
+                    }
+                },
+                // 隱藏區塊
+                hideBlock : function(itemJqueryObj){
+                    if( false == itemJqueryObj.hasClass('hidden') ){
+                        itemJqueryObj.addClass('hidden');
+                    }
+                },
+
+                // 重置 info
+                setInfo : function (typr, str){
+                    $('#info')
+                    .removeClass()
+                    .addClass(typr)
+                    .text( str );
+                },
+                // 重置 info
+                resetInfo : function (){
+                    $('#info')
+                    .removeClass()
+                    .text( '' );
+                },
+
+            }
+
+            $(document).ready(init);    // 網頁完成後，呼叫 init
+            function init(){
+                $(document).on('pagebeforeshow', '#main', mainHandler);
+
+                $(document).on('click', '#getNewGame', getNewGameHandler);
+
+                $(document).on('click', '.goBet', goBetHandler);
+
+                $(document).on('change', '#mode', modeHandler);
+
+            }
+
+            function mainHandler(){
+                // 可用額顯示
+                common.showMoney();
+                // 建置下注額
+
+            }
+
+            function modeHandler(){
+                var mode = $(this).val();
+                if( 'poker' == mode ){
+                    config.cardImg = config.cardImgBase + 'poker/';
+                    config.cardImgType = 'jpg';
+                }else if('AV_poker' == mode){
+                    config.cardImg = config.cardImgBase + 'AV_poker/';
+                    config.cardImgType = 'jpg';
+                }else{
+                    config.cardImg = config.cardImgBase + 'AV_poker_2009/';
+                    config.cardImgType = 'png';
+                }
+            }
+
+            // 下注
+            function goBetHandler(){
+                var betNumber = $(this).attr('betNumber');
+                if( 'quit' == betNumber ){
+                    // 放棄, 不動作
+                    common.setInfo( 'black', '棄權' );
+                }else{
+                    // 有下注
+                    if( 'max' == betNumber ){
+                        // 全下
+                        betNumber = common.getMoney();
+                    }
+                    betNumber = parseInt(betNumber);
+                    if( common.getMoney() >= betNumber ){
+                        common.showCard('shotGantryMiddle', common.getOneCard());
+
+                        // 比較
+                        var left = $('#shotGantryLeft').attr('cardInfo');
+                        var leftNumber = parseInt(left.substr(1,2));
+                        var middle = $('#shotGantryMiddle').attr('cardInfo');
+                        var middleNumber = parseInt(middle.substr(1,2));
+                        var right = $('#shotGantryRight').attr('cardInfo');
+                        var rightNumber = parseInt(right.substr(1,2));
+
+                        if( leftNumber == middleNumber || middleNumber == rightNumber ){
+                            // 中龍柱，扣下注兩倍
+                            common.deductionMoney( parseInt(betNumber)*2, 'GG!!中龍柱，罰兩倍');
+                        }else if( leftNumber < middleNumber && middleNumber < rightNumber ){
+                            // 進龍門，加下注額
+                            common.addMoney( parseInt(betNumber), 'Goal!!');
+                        }else if( leftNumber > middleNumber && middleNumber > rightNumber ){
+                            // 進龍門，加下注額
+                            common.addMoney( parseInt(betNumber), 'Goal!!');
+                        }else{
+                            // 龍門外，扣下注額
+                            common.deductionMoney( parseInt(betNumber), '沒進!0.0');
+                        }
+                    }else{
+                        common.setInfo( 'black', '錢不夠啦，還騙' );
+                    }
+                }
+
+                // 馬上關閉下注金額按鈕
+                common.hideBlock($('#betNumber'));
+                // 3 秒後恢復下注畫面
+                setTimeout(function(){
+                    //
+                    common.resetInfo();
+
+                    // 關閉下注info
+                    common.hideBlock($('#betInfo'));
+
+                    // 顯示參加按鈕
+                    common.showBlock($('#goGameBlock'));
+
+                    }, 3000);
+            }
+
+            // 新遊戲
+            function getNewGameHandler(){
+                if( common.getMoney() >= config.joinMoney ){
+                    // 扣除參加費
+                    common.payJoinMoney();
+
+                    // 隱藏參加
+                    common.hideBlock($('#goGameBlock'));
+
+                    // 分別給左右 亂數一張牌數字 中間重置
+                    giveCardLeftRight()
+                    common.resetCard('shotGantryMiddle');
+
+                    // 顯示 下注Info, 額
+                    common.showBlock($('#betInfo'));
+                    common.showBlock($('#betNumber'));
+                }else{
+                    common.setInfo( 'black', '都沒錢了，還想參加' );
+                }
+            }
+
+            function giveCardLeftRight(){
+                // 前置檢查  不要出現相同數字的龍門
+                var leftCardId = common.getOneCard();
+                var leftNumber = parseInt(leftCardId.substr(1,2));
+                var rightCardId = common.getOneCard();
+                var rightNumber = parseInt(rightCardId.substr(1,2));
+
+                if(leftNumber == rightNumber | 1 == (leftNumber - rightNumber) | 1 == (rightNumber - leftNumber) ){
+                    giveCardLeftRight();
+                }else{
+                    common.showCard('shotGantryLeft', leftCardId);
+                    common.showCard('shotGantryRight', rightCardId);
+
+                }
+            }
+
+
+        </script>
+    </body>
+</html>

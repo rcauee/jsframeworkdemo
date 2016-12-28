@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+    <head>
+        <title>angular</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+        
+            <script type="text/javascript" src="frameworkjs.js"></script>
+            <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
+        
+
+    </head>
+    <body>
+        <div ng-app="app" ng-controller="AppController as appc" class="container">
+            <div class="container">
+                <div class="row well" id="headerBlock">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.rule()">規則</button>
+                        </div>
+                        <div class="col-md-4 text-center"><h4>猜數字</h4></div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-lg btn-info btn-block" ng-click="appc.restart()">重置</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row well" id="infoBlock">
+                    <div class="row">
+                        <div class="col-md-5 text-center">{{appc.min}}~{{appc.max}}</div>
+                        <div class="col-md-7"><span class="red blink_me">{{appc.info}}</span></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center">{{appc.guess}}</div>
+                    </div>
+                </div>
+                <div id="numBlock" class="row well">
+                    <div class="row">
+                        <div class="col-md-1">&nbsp;</div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(1)">1</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(2)">2</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(3)">3</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(4)">4</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(5)">5</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(6)">6</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(7)">7</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(8)">8</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(9)">9</button></div>
+                        <div class="col-md-1"><button type="button" class="btn btn-lg btn-default btn-block" ng-click="appc.num(0)">0</button></div>
+                        <div class="col-md-1">&nbsp;</div>
+                    </div>
+                </div>
+                <!--
+                <div class="row well">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-lg btn-success btn-block" ng-click="appc.resetNum()">reset</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-lg btn-danger btn-block" ng-click="appc.guessNum()">go</button>
+                    </div>
+                </div>
+                -->
+                <!--
+                <div class="row well">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-lg btn-success btn-block" ng-click="$ctrl.resetNum()">reset</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button-component show-text="go" button-class="btn-danger" on-click="$ctrl.guessNum()" ></button-component>
+                    </div>
+                </div>
+                -->
+
+                <other-block on-reset="appc.resetNum()" on-guess="appc.guessNum()"></other-block>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            (function(angular) {
+                'use strict';
+                var app = angular.module('app', []);
+                
+                // 按鈕元件
+                // <button-component show-text="{按鈕顯示}" button-class="{使用的 class 樣式}" on-click="{觸發按下時要呼叫的func}" ></button-component>
+                app.component('buttonComponent', {
+                    template: '<button type="button" class="btn btn-lg {{$ctrl.buttonClass}} btn-block" ng-click="$ctrl.guessNum()">{{$ctrl.showText}}</button>',
+                    bindings: {
+                        showText: '@',
+                        buttonClass : '@',
+                        onClick: '&'
+                    },
+                    controller: function () {
+                        //console.log($scope)
+                        //console.log($element)
+                        //console.log($attrs)
+                        //console.log(this)
+
+                        var ctrl = this;
+
+                        ctrl.guessNum = function(){
+                            //console.log('buttonComponent guessNum')
+                            this.onClick();
+                        }
+                    }
+                });
+
+                // 其他區塊
+                // <other-block on-reset="{觸發 onReset 時要呼叫func}" on-guess="{觸發 onGuess 時要呼叫func}"></other-block> 
+                app.component('otherBlock', {
+                    templateUrl : 'angular_otherBlock.html',
+                    bindings: {
+                        onReset: '&',
+                        onGuess: '&'
+                    },
+                    controller: function () {
+
+                        var ctrl = this;
+
+                        ctrl.resetNum = function(){
+                            console.log('otherBlock resetNum')
+                            this.onReset();
+                        }
+
+                        ctrl.guessNum = function(){
+                            console.log('otherBlock guessNum')
+                            this.onGuess();
+                        }
+                    }
+                })
+                
+                
+                var appController = app.controller('AppController', function AppController() {
+                    
+                    //var ctrl = this;
+
+                    this.timer;
+                    
+                    this.rule = function rule(){
+                        //console.log('rule');
+                        alert('Rule');
+                    }
+                    
+                    this.restart = function restart(){
+                        //console.log('restart');
+                        this.resetData();
+                    }
+                    
+                    this.num = function num(num) {
+                        //console.log(num);
+                        if(true == this.run){
+                        this.info = '';
+                            clearTimeout(this.timer);
+                            // 將數字寫入 num 區塊
+                            if(config.guessNum == this.guess)
+                            {
+                                // 未寫入值
+                                this.guess = parseInt(num);
+                            }
+                            else if( 10 > this.guess )
+                            {
+                                // 只有一位數
+                                this.guess =  parseInt(this.guess * 10) + parseInt(num);
+                            }
+                            else
+                            {
+                                // 兩位數
+                                this.guess = Math.floor( this.guess % 10 ) * 10 + parseInt(num);
+                            }
+                        }
+                    };
+                    
+                    this.resetNum = function resetNum(){
+                        console.log('resetNum');
+                        if(true == this.run){
+                            this.guess = config.guessNum;
+                        }
+                    }
+                    
+                    this.guessNum = function guessNum(){
+                        console.log('guess');
+                        if(true == this.run){
+                            if( this.guess == config.targetNum )
+                            {
+                                // 中，
+                                this.info = '中啦';
+                                this.run = false;
+                            }
+                            else if( config.targetNum < this.guess && this.guess < this.max )
+                            {
+                                // 大數區間
+                                this.max = this.guess;
+                                this.guess = config.guessNum;
+                            }
+                            else if( this.min < this.guess && this.guess < config.targetNum )
+                            {
+                                // 小數區間
+                                this.min = this.guess;
+                                this.guess = config.guessNum;
+                            }
+                            else
+                            {
+                                // 區間錯誤
+                                this.info = '區間錯誤';
+                                clearTimeout(this.timer);
+                                this.timer = setTimeout(
+                                    this.setInfoBlockInfo, 2000
+                                );
+                                this.guess = config.guessNum;
+                            }
+                        }
+                    }
+                    
+                    this.setInfoBlockInfo = function setInfoBlockInfo(){
+                        this.info = '';
+                    }
+                    
+                    this.resetData = function resetData(){
+                        this.min = config.minNum;
+                        this.max = config.maxNum;
+                        this.info = '';
+                        this.guess = config.guessNum;
+                        this.run = true;
+                    }
+                    
+                    this.resetData();
+                    common.resetTargetNum();
+                });
+            })(window.angular);
+        </script>
+        
+    </body>
+</html>

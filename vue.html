@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Vue</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.6/vue.min.js"></script>
+            <script type="text/javascript" src="frameworkjs.js"></script>
+            <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
+
+    </head>
+    <body>
+        <div class="container">
+            <div id="app" class="container">
+                <headerblock-component 
+                    v-on:rule="fromRule" 
+                    v-on:restart="fromRestart"
+                ></headerblock-component>
+                <infoblock-component
+                    v-model="infoBlock"
+                ></infoblock-component>
+                <numblock-component 
+                    v-on:setnum="fromSetnum"
+                    v-on:setnum2="fromSetnum2"
+                ></numblock-component>
+                <otherblock-component
+                    v-on:resetnum="fromResetnum"
+                    v-on:guess="fromGuess"
+                ></otherblock-component>
+            </div>
+        </div>
+        <script type="text/x-template" id="headerblock-template">
+            <div class="row well">
+                <div class="row">
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="rule">規則</button>
+                    </div>
+                    <div class="col-md-4 text-center"><h4>猜數字</h4></div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-lg btn-info btn-block" v-on:click="restart">重置</button>
+                    </div>
+                </div>
+            </div>
+        </script>
+        <script type="text/javascript">
+            var data = {
+                minNum : config.minNum,
+                maxNum : config.maxNum,
+                info : '',
+                guessNum : config.guessNum,
+                run : true
+            }
+            var timer;
+            
+            // 建立 headerBlock 元件
+            Vue.component('headerblock-component', {
+                template:'#headerblock-template',
+                methods: {
+                    rule: function (event) {
+                        this.$emit('rule');
+                    },
+                    restart: function(event){
+                        this.$emit('restart');
+                    }
+                }
+            })
+            // infoblock 元件
+            Vue.component('infoblock-component', {
+                template:'\
+                    <div class="row well">\
+                        <div class="row">\
+                            <div class="col-md-5 text-center"><h4>{{value.minNum}}~{{value.maxNum}}</h4></div>\
+                            <div class="col-md-7"><h4 class="red blink_me"><b>{{value.info}}</b></h4></div>\
+                        </div>\
+                        <div class="row">\
+                            <div class="col-md-12 text-center"><h2>{{value.guessNum}}</h2></div>\
+                        </div>\
+                    </div>\
+                ',
+                props: {
+                    value: {
+                        type: String,
+                        default: ''
+                    },
+                },
+            })
+            
+            // numblockitem 元件，有變數需初始化
+            Vue.component('numblockitem-component', {
+                template:'\
+                    <div class="col-md-1">\
+                        <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="click">{{num}}</button>\
+                    </div>\
+                ',
+                props: {
+                    num: {
+                        type: Number,
+                        default: 0
+                    }
+                },
+                methods: {
+                    click: function (event) {
+                        this.$emit('setnum', this.num);
+                    }
+                }
+            })
+            // numblock 元件
+            Vue.component('numblock-component', {
+                template:'\
+                    <div class="row well" id="numBlock">\
+                        <div class="row">\
+                            <div class="col-md-1">&nbsp;</div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(1)">1</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(2)">2</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(3)">3</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(4)">4</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(5)">5</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(6)">6</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(7)">7</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(8)">8</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(9)">9</button>\
+                            </div>\
+                            <div class="col-md-1">\
+                                <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="setnum(0)">0</button>\
+                            </div>\
+                            <div class="col-md-1">&nbsp;</div>\
+                        </div>\
+                        <div class="row">\
+                            <div class="col-md-1">&nbsp;</div>\
+                            <numblockitem-component num="1" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="2" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="3" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="4" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="5" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="6" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="7" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="8" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="9" v-on:setnum="setnum2"></numblockitem-component>\
+                            <numblockitem-component num="0" v-on:setnum="setnum2"></numblockitem-component>\
+                            <div class="col-md-1">&nbsp;</div>\
+                        </div>\
+                    </div>\
+                ',
+                methods: {
+                    setnum: function (num) {
+                        console.log('setnum')
+                        this.$emit('setnum', num);
+                    },
+                    setnum2: function (num) {
+                        console.log('setnum2')
+                        this.$emit('setnum2', num);
+                    }
+                }
+            })
+            
+            // otherblock 元件
+            Vue.component('otherblock-component', {
+                template:'\
+                    <div class="row well">\
+                        <div class="col-md-6">\
+                            <button type="button" class="btn btn-lg btn-success btn-block" v-on:click="resetnum">reset</button>\
+                        </div>\
+                        <div class="col-md-6">\
+                            <button type="button" class="btn btn-lg btn-danger btn-block" v-on:click="guess">guess</button>\
+                            <button-component buttonText="guess" class="btn-danger" v-on:doClick="guess"></button-component>\
+                        </div>\
+                    </div>\
+                ',
+                methods: {
+                    resetnum: function (event) {
+                        this.$emit('resetnum');
+                    },
+                    guess: function(event){
+                        this.$emit('guess');
+                    }
+                }
+            })
+
+            // 直接將 component 指定的 class 放入 template 中 
+            Vue.component('button-component', {
+                template:'<button type="button" class="btn btn-lg btn-block" v-on:click="click">{{buttonText}} {{buttonClass}}</button>',
+                props: {
+                    buttonClass: {
+                        type: String,
+                        default: ''
+                    },
+                    buttonText: {
+                        type: String,
+                        default: ''
+                    }
+                },
+                methods:{
+                    click: function(event){
+                        this.$emit('doClick');
+                    }
+                }
+            })
+            
+            // 创建根实例
+            new Vue({
+                el: '#app',
+                data : {
+                    infoBlock : {
+                        minNum : config.minNum,
+                        maxNum : config.maxNum,
+                        info : '',
+                        guessNum : config.guessNum,
+                        run : true
+                    }
+                },
+                created: function () {
+                    this.resetData();
+                },
+                methods : {
+                    fromRule : function(){
+                        console.log('fromRule');
+                        alert('Rule');
+                    },
+                    fromRestart : function(){
+                        console.log('fromRestart');
+                        this.resetData();
+                    },
+                    fromSetnum2 : function(num){
+                        console.log('fromSetnum2');
+                        
+                        this.fromSetnum(num);
+                        
+                    },
+                    fromSetnum : function (num){
+                        console.log('fromSetnum');
+                        if(true == this.infoBlock.run){
+                            this.infoBlock.info = '';
+                            clearTimeout(timer);
+                            // 將數字寫入 num 區塊
+                            if(config.guessNum == this.infoBlock.guessNum)
+                            {
+                                // 未寫入值
+                                this.infoBlock.guessNum = parseInt(num);
+                            }
+                            else if( 10 > this.infoBlock.guessNum )
+                            {
+                                // 只有一位數
+                                this.infoBlock.guessNum =  parseInt(this.infoBlock.guessNum * 10) + parseInt(num);
+                            }
+                            else
+                            {
+                                // 兩位數
+                                this.infoBlock.guessNum = Math.floor( this.infoBlock.guessNum % 10 ) * 10 + parseInt(num);
+                            }
+                        }
+                        
+                        
+                    },
+                    fromResetnum : function(){
+                        console.log('fromResetnum');
+                        if(true == this.infoBlock.run){
+                            this.infoBlock.guessNum = '??';
+                        }
+                    },
+                    fromGuess : function(){
+                        console.log('fromGuess');
+                        // 開猜
+                        if(true == this.infoBlock.run){
+                            if( this.infoBlock.guessNum == config.targetNum )
+                            {
+                                // 中，
+                                this.infoBlock.info = '中啦';
+                                this.infoBlock.run = false;
+                            }
+                            else if( config.targetNum < this.infoBlock.guessNum && this.infoBlock.guessNum < this.infoBlock.maxNum )
+                            {
+                                // 大數區間
+                                this.infoBlock.maxNum = this.infoBlock.guessNum;
+                                this.infoBlock.guessNum = config.guessNum;
+                            }
+                            else if( this.infoBlock.minNum < this.infoBlock.guessNum && this.infoBlock.guessNum < config.targetNum )
+                            {
+                                // 小數區間
+                                this.infoBlock.minNum = this.infoBlock.guessNum;
+                                this.infoBlock.guessNum = config.guessNum;
+                            }
+                            else
+                            {
+                                // 區間錯誤
+                                this.infoBlock.info = '區間錯誤';
+                                clearTimeout(timer);
+                                timer = setTimeout(
+                                    this.setInfoBlockInfo, 2000
+                                );
+                                this.infoBlock.guessNum = config.guessNum;
+                            }
+                        }
+                    },
+                    setInfoBlockInfo : function(){
+                        this.infoBlock.info = ''
+                    },
+                    resetData : function(){
+                        this.infoBlock.minNum = config.minNum;
+                        this.infoBlock.maxNum = config.maxNum;
+                        this.infoBlock.info = '';
+                        this.infoBlock.guessNum = config.guessNum;
+                        this.infoBlock.run = true;
+                        
+                        common.resetTargetNum();
+                        //config.targetNum = 11;
+                    }
+                    
+                }
+            })
+            
+        </script>
+
+    </body>
+</html>
