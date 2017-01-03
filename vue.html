@@ -8,43 +8,52 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.6/vue.min.js"></script>
-            <script type="text/javascript" src="frameworkjs.js"></script>
-            <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
+        <script type="text/javascript" src="frameworkjs.js"></script>
+        <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
 
     </head>
     <body>
         <div class="container">
             <div id="app" class="container">
+                <!--headerblock-component 中觸發 rule、restart 事件 分別呼叫 fromRule、fromRestart -->
                 <headerblock-component 
                     v-on:rule="fromRule" 
                     v-on:restart="fromRestart"
                 ></headerblock-component>
+                <!--綁定 infoBlock 資料-->
                 <infoblock-component
                     v-model="infoBlock"
                 ></infoblock-component>
+                <!--事件觸發-->
                 <numblock-component 
                     v-on:setnum="fromSetnum"
                     v-on:setnum2="fromSetnum2"
                 ></numblock-component>
+                <!--事件觸發-->
                 <otherblock-component
                     v-on:resetnum="fromResetnum"
                     v-on:guess="fromGuess"
                 ></otherblock-component>
             </div>
         </div>
+        
+        <!--template page-->
         <script type="text/x-template" id="headerblock-template">
             <div class="row well">
                 <div class="row">
                     <div class="col-md-4">
+                        <!--觸發點擊事件後呼叫 rule-->
                         <button type="button" class="btn btn-lg btn-default btn-block" v-on:click="rule">規則</button>
                     </div>
                     <div class="col-md-4 text-center"><h4>猜數字</h4></div>
                     <div class="col-md-4">
+                        <!--觸發點擊事件後呼叫 restart-->
                         <button type="button" class="btn btn-lg btn-info btn-block" v-on:click="restart">重置</button>
                     </div>
                 </div>
             </div>
         </script>
+        
         <script type="text/javascript">
             var data = {
                 minNum : config.minNum,
@@ -55,14 +64,16 @@
             }
             var timer;
             
-            // 建立 headerBlock 元件
+            // 建立 headerBlock 元件，執行事件上浮
             Vue.component('headerblock-component', {
                 template:'#headerblock-template',
                 methods: {
                     rule: function (event) {
+                        // 觸發 rule 事件
                         this.$emit('rule');
                     },
                     restart: function(event){
+                        // 觸發 restart 事件
                         this.$emit('restart');
                     }
                 }
@@ -145,7 +156,7 @@
                             </div>\
                             <div class="col-md-1">&nbsp;</div>\
                         </div>\
-                        <div class="row">\
+                        <div class="row hidden">\
                             <div class="col-md-1">&nbsp;</div>\
                             <numblockitem-component num="1" v-on:setnum="setnum2"></numblockitem-component>\
                             <numblockitem-component num="2" v-on:setnum="setnum2"></numblockitem-component>\
@@ -181,7 +192,6 @@
                             <button type="button" class="btn btn-lg btn-success btn-block" v-on:click="resetnum">reset</button>\
                         </div>\
                         <div class="col-md-6">\
-                            <button type="button" class="btn btn-lg btn-danger btn-block" v-on:click="guess">guess</button>\
                             <button-component buttonText="guess" class="btn-danger" v-on:doClick="guess"></button-component>\
                         </div>\
                     </div>\
@@ -196,7 +206,7 @@
                 }
             })
 
-            // 直接將 component 指定的 class 放入 template 中 
+            // button-component 元件 
             Vue.component('button-component', {
                 template:'<button type="button" class="btn btn-lg btn-block" v-on:click="click">{{buttonText}} {{buttonClass}}</button>',
                 props: {

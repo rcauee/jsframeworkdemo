@@ -9,8 +9,8 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
         
-            <script type="text/javascript" src="frameworkjs.js"></script>
-            <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
+        <script type="text/javascript" src="frameworkjs.js"></script>
+        <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
         
 
     </head>
@@ -121,11 +121,13 @@
 
                         ctrl.resetNum = function(){
                             console.log('otherBlock resetNum')
+                            // 觸發 onReset
                             this.onReset();
                         }
 
                         ctrl.guessNum = function(){
                             console.log('otherBlock guessNum')
+                            // 觸發 onGuess
                             this.onGuess();
                         }
                     }

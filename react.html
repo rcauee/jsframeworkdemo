@@ -10,14 +10,14 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react-dom.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.38/browser.min.js"></script>
-            <script type="text/javascript" src="frameworkjs.js"></script>
-            <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
+        <script type="text/javascript" src="frameworkjs.js"></script>
+        <link type="text/css" rel="stylesheet" href="frameworkjs.css" />
 
     </head>
     <body>
         <div class="container" id="app"></div>
         <script type="text/babel">
-            // button
+            // button 元件
             class BootstrapButton extends React.Component {
                 constructor(props) {
                     super(props);
@@ -29,6 +29,7 @@
                     this.props.clickFn();
                 }
                 render() {
+                    // 建立元素
                     return React.createElement(
                         'button'
                         , {
@@ -41,7 +42,7 @@
                 }
             }
             
-            // header
+            // header 元件
             class HeaderBlock extends React.Component {
                 render() {
                     return (
@@ -58,7 +59,7 @@
                 }
             }
             
-            // info
+            // info 元件
             class InfoBlock extends React.Component {
                 render() {
                     return (
@@ -105,7 +106,7 @@
                 }
             }
             
-            // otherBlock
+            // otherBlock 元件
             class OtherBlock extends React.Component {
                 render() {
                     return (
@@ -121,6 +122,7 @@
                 }
             }
             
+            // otherBlock 元件
             var OtherBlockClass = React.createClass({
                 render: function () {
                     return (
@@ -138,6 +140,7 @@
             
             // app
             class App extends React.Component {
+                
                 constructor(props) {
                     super(props);
                     // This binding is necessary to make `this` work in the callback
@@ -162,6 +165,7 @@
                     //console.log('App handleRuleClick!!');
                     alert('Rule');
                 }
+                
                 handleRestartClick() {
                     // 重置
                     //console.log('App handleRestartClick!!');
@@ -169,6 +173,7 @@
                     this.resetData();
                     this.forceUpdate();
                 }
+
                 handleNumClick(num){
                     // 數字鍵按鈕
                     //console.log('App handleNumClick!!('+num+')');
@@ -194,9 +199,8 @@
                         }
                         this.forceUpdate();
                     }
-                    
-                    
                 }
+
                 handleResetClick(){
                     // 重設
                     //console.log('App handleResetClick!!');
@@ -205,6 +209,7 @@
                         this.forceUpdate();
                     }
                 }
+
                 handleGoClick(){
                     // 開猜
                     //console.log('App handleGoClick!!');
@@ -242,10 +247,12 @@
                     }
                     
                 }
+
                 setInfoBlockInfo(){
                     this.info = '';
                     this.forceUpdate();
                 }
+
                 resetData(){
                     this.min = config.minNum;
                     this.max = config.maxNum;
@@ -253,6 +260,7 @@
                     this.guess = config.guessNum;
                     this.run = true;
                 }
+
                 render() {
                     return (
                         <div className="container">
