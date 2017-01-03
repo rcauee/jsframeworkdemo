@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+    <head>
+        <title>angular</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-route.min.js"></script>
+
+    </head>
+    <body>
+        <div ng-app="app" class="container" ng-controller="MainCtrl as main">
+            <div class="container">
+                <ul class="nav nav-tabs">
+                    
+                    <li role="presentation"><a href="#!/">main</a></li>
+                    
+                    <li role="presentation"><a href="#!one">one</a></li>
+                    <li role="presentation"><a href="#!one/123">one/123</a></li>
+
+                    <li role="presentation"><a href="#!two">two</a></li>
+                    <li role="presentation"><a href="#!two/456?key=value">two/456?key=value</a></li>
+
+                </ul>
+            </div>
+
+            <div class="container">
+                <div ng-view></div>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            (function(angular) {
+                'use strict';
+                var app = angular.module('app', ["ngRoute"]);
+                app.config(
+                    ['$routeProvider', '$locationProvider',
+                        function($routeProvider, $locationProvider) {
+
+                            $routeProvider.when(
+                                "/", 
+                                {
+                                    templateUrl : "angular/main.html",
+                                    controller: 'MainCtrl',
+                                    controllerAs: 'main'
+                                }
+                            );
+
+                            $routeProvider.when(
+                                "/one", 
+                                {
+                                    templateUrl : "angular/one.html",
+                                    controller: 'OneCtrl',
+                                    controllerAs: 'one'
+                                }
+                            );
+                            $routeProvider.when(
+                                "/one/:id", 
+                                {
+                                    templateUrl : "angular/one.html",
+                                    controller: 'OneCtrl',
+                                    controllerAs: 'one'
+                                }
+                            );
+                            
+                            $routeProvider.when(
+                                "/two", 
+                                {
+                                    templateUrl : "angular/two.html",
+                                    controller: 'TwoCtrl',
+                                    controllerAs: 'two'
+                                }
+                            );
+
+                            $routeProvider.when(
+                                "/two/:id", 
+                                {
+                                    templateUrl : "angular/two.html",
+                                    controller: 'TwoCtrl',
+                                    controllerAs: 'two'
+                                }
+                            );
+                            
+                            $routeProvider.otherwise(
+                                {
+                                    template : "<h1>None</h1><p>Nothing has been selected,</p>"
+                                }
+                            );
+
+                            $locationProvider.hashPrefix('!');
+                            //$locationProvider.html5Mode(true);
+                        }
+                    ]
+                );
+
+                app.controller(
+                    'MainCtrl', 
+                    ['$route', '$routeParams', '$location',
+                    function MainCtrl($route, $routeParams, $location) {
+                        this.$route = $route;
+                        this.$location = $location;
+                        this.$routeParams = $routeParams;
+                    }]
+                );
+
+                app.controller(
+                    'OneCtrl', 
+                    ['$routeParams', 
+                    function OneCtrl($routeParams) {
+                        this.name = 'OneCtrl';
+                        this.params = $routeParams;
+                    }]
+                );
+
+                app.controller(
+                    'TwoCtrl', 
+                    ['$routeParams', 
+                    function TwoCtrl($routeParams) {
+                        this.name = 'TwoCtrl';
+                        this.params = $routeParams;
+                    }]
+                );
+                
+            })(window.angular);
+        </script>
+        
+    </body>
+</html>
