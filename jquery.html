@@ -1,378 +1,293 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>JQ</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<head>
+<title>Final Code</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<style type="text/css">
+.center{
+    text-align: center;
+}
+.left{
+    text-align: left;
+    font-weight: bold;
+}
+.right{
+    text-align: right;
+    font-weight: bold;
+}
+.big{
+    font-size: large;
+    font-weight: bold;
+}
+.red{
+    color: red;
+}
+.blink_me {
+  animation: blinker 1s linear infinite;
+}
 
-        <style type="text/css">
-            .hidden{
-                display: none;
-            }
-            .lose{
-                color: red;
-            }
-            .win{
-                color: blue;
-            }
-            .black{
-                color: black;
-            }
-            .imgMaxSize{
-                max-width: 100%;
-                max-height: 300px;
-            }
-        </style>
+@keyframes blinker {  
+  50% { opacity: 0; }
+}
 
-    </head>
-    <body>
-        <div class="container">
-            <div class="container">
-                <div class="row well" id="headerBlock">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <button type="button" class="btn btn-lg btn-default btn-block">規則</button>
-                        </div>
-                        <div class="col-md-4 text-center"><h4>猜數字</h4></div>
-                        <div class="col-md-4">
-                            <button type="button" class="btn btn-lg btn-info btn-block">重置</button>
-                        </div>
-                    </div>
+</style>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script type="text/javascript">
+var config = {
+    maxNum : 25,
+    space : ' ',
+    comma : ',',
+    brn : "\n"
+}
+
+var stringToArray = function(string, separator) {
+    var arrayOfStrings = string.split(separator);
+    return arrayOfStrings;
+}
+var arrayToString = function(array, separator){
+    var stringOfArray = array.join(separator);
+    return stringOfArray;
+}
+
+//
+var showComponent = function()
+{
+    console.log('showComponent');
+    
+}
+
+// 建立開獎號碼元件
+var createOpenComponent = function()
+{
+    // 取得目前已經設定的 開獎號碼
+    var openNumStr = localStorage["openNumStr"].trim();
+    var openNumAry = stringToArray(openNumStr, config.space);
+    
+    // 清空
+    $('#numBlock').empty();
+    // 建立 1~maxNum 按鈕於畫面
+    for(i=1;i<=config.maxNum;i++){
+        
+        var iStr = "" + i;
+        
+        // 
+        var button = $("<button></button>").addClass("setNum ui-btn ui-corner-all").text(i);
+        var btndivClass = "";
+        btnClass = ( openNumAry.indexOf(iStr) === -1)?'':'ui-btn-b';
+        button.addClass(btnClass);
+        
+        //
+        var div = $("<div></div>").html(button);
+        var divClass = "";
+        divClass = (1 == i % 5)?'ui-block-a':divClass;
+        divClass = (2 == i % 5)?'ui-block-b':divClass;
+        divClass = (3 == i % 5)?'ui-block-c':divClass;
+        divClass = (4 == i % 5)?'ui-block-d':divClass;
+        divClass = (0 == i % 5)?'ui-block-e':divClass;
+        div.addClass(divClass);
+        
+        $('#numBlock').append(div);
+    }
+    
+    // 綁定 開獎功能
+    $('.setNum').on('click', function(){
+        // 號碼
+        var num = $(this).text();
+        
+        if(true == $(this).hasClass('ui-btn-b')){
+            // 換色 白
+            $(this).removeClass('ui-btn-b');
+            // 開獎資料移除 num
+            var key = openNumAry.indexOf(num);
+            if( -1 !== key ){
+                openNumAry.splice(key, 1)
+            }
+            
+        }else{
+            // 換色 黑
+            $(this).addClass('ui-btn-b');
+            // 開獎資料加入 num
+            openNumAry.push(num);
+        }
+        
+        openNumStr = arrayToString(openNumAry, config.space)
+        
+        localStorage.openNumStr = openNumStr;
+    })
+}
+
+// 建立項目
+var listChooseNumComponent = function()
+{
+    var openNumStr = localStorage["chooseNumStr"].trim();
+    var openNumAry = stringToArray(openNumStr, config.brn);
+    
+    var chooseBlock = $('#chooseBlock');
+    
+    chooseBlock.empty();
+    
+    openNumAry.forEach(function(currentValue){
+        chooseBlock.append($('<li></li>').css('white-space','normal').html(currentValue));
+    }, this)
+    
+    chooseBlock.listview('refresh');
+}
+
+$(document).ready(init);    // 網頁完成後，呼叫 init
+function init(){
+    
+    $(document).on('pagebeforeshow', '#main', function(){
+        //
+        showComponent();
+        
+        // 建立 開獎 元件
+        createOpenComponent();
+        
+        // 把儲存的資料讀出
+        $('#inputArea').val(localStorage["chooseNumStr"]);
+        
+        // 建立彩票資料
+        listChooseNumComponent();
+        
+    });
+    
+    // 設定 紀錄
+    $('#storageSave').on('click', function(){
+        // 
+        localStorage.chooseNumStr = $('#inputArea').val();
+        listChooseNumComponent();
+    });
+    $('#storageLoad').on('click', function(){
+        // 
+        $('#inputArea').val(localStorage["chooseNumStr"]);
+        listChooseNumComponent();
+    });
+    $('#storageClear').on('click', function(){
+        localStorage.chooseNumStr = '';
+        localStorage.openNumStr = '';
+        listChooseNumComponent();
+    });
+    $('#storageTest').on('click', function(){
+        if (typeof(Storage) !== "undefined") {
+            alert('Code for localStorage/sessionStorage.');
+        } else {
+            alert('Sorry! No Web Storage support..');
+        }
+    });
+}
+
+</script>
+
+<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+<body>
+<div id="main" data-role="page">
+    <div data-role="header">
+        <a href="#info" 
+            class='ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-info'
+        >規則</a>
+        <h1>樂透</h1>
+    </div>
+    <div data-role="content">
+        <div data-role="tabs" id="tabs">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#one" data-ajax="false">顯示</a></li>
+                    <li><a href="#two" data-ajax="false">開獎</a></li>
+                    <li><a href="#three" data-ajax="false">設定</a></li>
+                </ul>
+            </div>
+            
+            <div id="one" class="">
+                依照 web storage 處理顯示資料
+                <br>
+                <ul data-role="listview" data-inset="true" id="showBlock">
+                    <!--區塊顯示-->
+                </ul>
+            </div>
+            
+            <div id="two" class="center">
+                把所有號碼列出，點亮為開 點暗為未開
+                <br>
+                <div class="ui-grid-d" id="numBlock">
+                    <!--開獎號碼-->
                 </div>
-                <div class="row well" id="infoBlock">
-                    <div class="row">
-                        <div class="col-md-5 text-center"><span>min</span>~<span>max</span></div>
-                        <div class="col-md-7"><span id="info"></span></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 text-center"><span>num</span></div>
-                    </div>
+                
+            </div>
+            
+            <div id="three">
+                設定自己的號碼進 web storage
+                <textarea id="inputArea" ></textarea>
+                <div class="ui-grid-c">
+                    <div class="ui-block-a"><button id="storageSave">儲存</button></div>
+                    <div class="ui-block-b"><button id="storageLoad">載入</button></div>
+                    <div class="ui-block-c"><button id="storageClear">清除</button></div>
+                    <div class="ui-block-d"><button id="storageTest">測試</button></div>
                 </div>
-                <div class="row well" id="numBlock">
-                    <div class="row">
-                        <div class="col-md-1">&nbsp;</div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">1</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">2</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">3</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">4</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">5</button>
-                        </div>
-                        <div class="col-md-1">&nbsp;</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-1">&nbsp;</div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">6</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">7</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">8</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">9</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-lg btn-default btn-block">0</button>
-                        </div>
-                        <div class="col-md-1">&nbsp;</div>
-                    </div>
-                </div>
-                <div class="row well" id="otherBlock">
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-lg btn-success btn-block">reset</button>
-                    </div>
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-lg btn-danger btn-block">go</button>
-                    </div>
-                </div>
+                
+                <ul data-role="listview" data-inset="true" id="chooseBlock">
+                    <!--下注號碼-->
+                </ul>
+                
+            </div>
+            
+        </div>
+        <!--
+        <div class="ui-bar center">
+            <span id="ans"></span>
+            <span id="boom"></span>
+            <span id="info" class="red"></span>
+        </div>
+        
+        <div class="ui-grid-d">
+            <div class="ui-block-a"></div>
+            <div class="ui-block-b right red" id="num_min">min</div>
+            <div class="ui-block-c center big" id="num_now">now</div>
+            <div class="ui-block-d left red" id="num_max">max</div>
+            <div class="ui-block-e"></div>
+        </div>
+        
+        <div class="" id="">
+            <div class="ui-grid-d">
+                <div class="ui-block-a"><input type="button" value="1" class="setNum"></div>
+                <div class="ui-block-b"><input type="button" value="2" class="setNum"></div>
+                <div class="ui-block-c"><input type="button" value="3" class="setNum"></div>
+                <div class="ui-block-d"><input type="button" value="4" class="setNum"></div>
+                <div class="ui-block-e"><input type="button" value="5" class="setNum"></div>
+            </div>
+            <div class="ui-grid-d">
+                <div class="ui-block-a"><input type="button" value="6" class="setNum"></div>
+                <div class="ui-block-b"><input type="button" value="7" class="setNum"></div>
+                <div class="ui-block-c"><input type="button" value="8" class="setNum"></div>
+                <div class="ui-block-d"><input type="button" value="9" class="setNum"></div>
+                <div class="ui-block-e"><input type="button" value="0" class="setNum"></div>
+            </div>
+            
+            <div class="ui-grid-a">
+                <div class="ui-block-a"><input type="button" value="reset" id="resetNumber"></div>
+                <div class="ui-block-b"><input type="button" value="go" id="sendNumber"></div>
             </div>
         </div>
+        -->
+    </div>
+</div>
 
-        <script type="text/javascript">
-            /*
-            資料初始化
-                呼叫 API 取得玩家金錢
-                畫面顯示初始化
-                綁定物件事件
-            下注流程
-                發牌，呼叫 API server 選出兩張牌更新至畫面，變動畫面(隱藏發牌區塊 顯示下注區塊)
-                下注，呼叫 API 送入下注額，
-                    server 選出第三張判斷勝負，異動玩家金錢資料，回傳 第三張牌、玩家金錢
-                    更新第三張牌，顯示勝負結果，變動畫面(隱藏下注區塊)，更新 JS 玩家金錢
-                停頓 n 秒恢復可發牌流程，變動畫面(復原牌面、顯示發牌區塊)
-            加錢流程
-                呼叫 API 增加金錢，回傳 玩家金錢，更新 JS 玩家金錢
-            */
+<div id="info" data-role="page" data-add-back-btn="true">
+    <div data-role="header">
+        <a href="#main" data-rel="back" 
+            class="ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-carat-l">
+            Back
+        </a>
+        <h1>遊戲規則</h1>
+    </div>
+    <div data-role="content">
+        123
+    </div>
 
-            /*
-            資料初始化
-                渲染畫面
-
-                掛勾事件
-                
-                    
-
-                呼叫 API 取得要猜的數字
-
-            */
-
-            // 資料初始化
-            var config = {
-                money : 2000,
-                addMoney : 5000,
-                joinMoney : 0,
-                betMoneyAry : [100, 200, 500, 1000, 2000, 5000],
-                cardImgBase : 'http://rcauee.mooo.com/assets/img/',
-                cardImg : 'http://rcauee.mooo.com/assets/img/' + 'poker/',
-                cardImgType : 'jpg',
-            }
-
-            var common = {
-
-                getMoney : function()
-                {
-                    return config.money;
-                },
-                showMoney : function()
-                {
-                    $('#xxx').text(config.money);
-                },
-                // 投幣
-                coinMoney : function()
-                {
-                    common.addMoney( config.addMoney, '大戶加錢,投幣!!');
-                },
-                // 參加費用
-                payJoinMoney : function()
-                {
-                    common.deductionMoney( config.joinMoney, '參加費');
-                },
-                // 加錢
-                addMoney : function(money, reason)
-                {
-                    if('number' == typeof money){
-                        config.money += money;
-
-                        common.setInfo( 'win', reason + ',增加 ' + money );
-
-                        common.showMoney();
-                    }
-                },
-                // 扣錢
-                deductionMoney : function(money, reason)
-                {
-                    if('number' == typeof money & money > 0){
-                        config.money -= money;
-
-                        common.setInfo( 'lose', reason + ',扣除 ' + money );
-
-                        common.showMoney();
-                    }
-                },
-                // 發卡
-                getOneCard : function()
-                {
-                    // 花色
-                    var min = 1, max = 4;
-                    var colorNumber = Math.floor(Math.random()*(max-min+1)+min);
-                    var colorAry = {1:'C', 2:'D', 3:'H', 4:'S'}
-                    var color = colorAry[colorNumber];
-
-                    // 號碼
-                    var min = 1, max = 13;
-                    var number = Math.floor(Math.random()*(max-min+1)+min);
-
-                    return '' + color + number;
-                },
-                // 顯示卡片
-                showCard : function(blockId, cardId)
-                {
-                    var cardImgHtml = "<img src='" + config.cardImg + cardId + "." + config.cardImgType + "' class='imgMaxSize'>"
-                    $('#'+blockId)
-                    .attr('cardInfo', cardId)
-                    .html(cardImgHtml);
-                },
-                // 重置卡片
-                resetCard : function(blockId)
-                {
-                    $('#'+blockId)
-                    .attr('cardInfo', '')
-                    .text('?');
-                },
-
-                // 顯示區塊
-                showBlock : function(itemJqueryObj){
-                    if( true == itemJqueryObj.hasClass('hidden') ){
-                        itemJqueryObj.removeClass('hidden');
-                    }
-                },
-                // 隱藏區塊
-                hideBlock : function(itemJqueryObj){
-                    if( false == itemJqueryObj.hasClass('hidden') ){
-                        itemJqueryObj.addClass('hidden');
-                    }
-                },
-
-                // 重置 info
-                setInfo : function (typr, str){
-                    $('#info')
-                    .removeClass()
-                    .addClass(typr)
-                    .text( str );
-                },
-                // 重置 info
-                resetInfo : function (){
-                    $('#info')
-                    .removeClass()
-                    .text( '' );
-                },
-
-            }
-
-            $(document).ready(init);    // 網頁完成後，呼叫 init
-            function init(){
-                $(document).on('pagebeforeshow', '#main', mainHandler);
-
-                $(document).on('click', '#getNewGame', getNewGameHandler);
-
-                $(document).on('click', '.goBet', goBetHandler);
-
-                $(document).on('change', '#mode', modeHandler);
-
-            }
-
-            function mainHandler(){
-                // 可用額顯示
-                common.showMoney();
-                // 建置下注額
-
-            }
-
-            function modeHandler(){
-                var mode = $(this).val();
-                if( 'poker' == mode ){
-                    config.cardImg = config.cardImgBase + 'poker/';
-                    config.cardImgType = 'jpg';
-                }else if('AV_poker' == mode){
-                    config.cardImg = config.cardImgBase + 'AV_poker/';
-                    config.cardImgType = 'jpg';
-                }else{
-                    config.cardImg = config.cardImgBase + 'AV_poker_2009/';
-                    config.cardImgType = 'png';
-                }
-            }
-
-            // 下注
-            function goBetHandler(){
-                var betNumber = $(this).attr('betNumber');
-                if( 'quit' == betNumber ){
-                    // 放棄, 不動作
-                    common.setInfo( 'black', '棄權' );
-                }else{
-                    // 有下注
-                    if( 'max' == betNumber ){
-                        // 全下
-                        betNumber = common.getMoney();
-                    }
-                    betNumber = parseInt(betNumber);
-                    if( common.getMoney() >= betNumber ){
-                        common.showCard('shotGantryMiddle', common.getOneCard());
-
-                        // 比較
-                        var left = $('#shotGantryLeft').attr('cardInfo');
-                        var leftNumber = parseInt(left.substr(1,2));
-                        var middle = $('#shotGantryMiddle').attr('cardInfo');
-                        var middleNumber = parseInt(middle.substr(1,2));
-                        var right = $('#shotGantryRight').attr('cardInfo');
-                        var rightNumber = parseInt(right.substr(1,2));
-
-                        if( leftNumber == middleNumber || middleNumber == rightNumber ){
-                            // 中龍柱，扣下注兩倍
-                            common.deductionMoney( parseInt(betNumber)*2, 'GG!!中龍柱，罰兩倍');
-                        }else if( leftNumber < middleNumber && middleNumber < rightNumber ){
-                            // 進龍門，加下注額
-                            common.addMoney( parseInt(betNumber), 'Goal!!');
-                        }else if( leftNumber > middleNumber && middleNumber > rightNumber ){
-                            // 進龍門，加下注額
-                            common.addMoney( parseInt(betNumber), 'Goal!!');
-                        }else{
-                            // 龍門外，扣下注額
-                            common.deductionMoney( parseInt(betNumber), '沒進!0.0');
-                        }
-                    }else{
-                        common.setInfo( 'black', '錢不夠啦，還騙' );
-                    }
-                }
-
-                // 馬上關閉下注金額按鈕
-                common.hideBlock($('#betNumber'));
-                // 3 秒後恢復下注畫面
-                setTimeout(function(){
-                    //
-                    common.resetInfo();
-
-                    // 關閉下注info
-                    common.hideBlock($('#betInfo'));
-
-                    // 顯示參加按鈕
-                    common.showBlock($('#goGameBlock'));
-
-                    }, 3000);
-            }
-
-            // 新遊戲
-            function getNewGameHandler(){
-                if( common.getMoney() >= config.joinMoney ){
-                    // 扣除參加費
-                    common.payJoinMoney();
-
-                    // 隱藏參加
-                    common.hideBlock($('#goGameBlock'));
-
-                    // 分別給左右 亂數一張牌數字 中間重置
-                    giveCardLeftRight()
-                    common.resetCard('shotGantryMiddle');
-
-                    // 顯示 下注Info, 額
-                    common.showBlock($('#betInfo'));
-                    common.showBlock($('#betNumber'));
-                }else{
-                    common.setInfo( 'black', '都沒錢了，還想參加' );
-                }
-            }
-
-            function giveCardLeftRight(){
-                // 前置檢查  不要出現相同數字的龍門
-                var leftCardId = common.getOneCard();
-                var leftNumber = parseInt(leftCardId.substr(1,2));
-                var rightCardId = common.getOneCard();
-                var rightNumber = parseInt(rightCardId.substr(1,2));
-
-                if(leftNumber == rightNumber | 1 == (leftNumber - rightNumber) | 1 == (rightNumber - leftNumber) ){
-                    giveCardLeftRight();
-                }else{
-                    common.showCard('shotGantryLeft', leftCardId);
-                    common.showCard('shotGantryRight', rightCardId);
-
-                }
-            }
-
-
-        </script>
-    </body>
+</div>
+</body>
 </html>
