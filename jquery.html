@@ -38,7 +38,7 @@
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script type="text/javascript">
 var config = {
-    maxNum : 25,
+    maxNum : 99,
     oneBlockNum : 5,
     space : ' ',
     comma : ',',
@@ -68,10 +68,150 @@ var arrayToString = function(array, separator){
     return stringOfArray;
 }
 
+// 計算連線
+var countLine = function(winBlockIndex)
+{
+    
+    var line = 0;
+    if( 
+        -1 !== winBlockIndex.indexOf(0, 0) 
+        && -1 !== winBlockIndex.indexOf(1, 0) 
+        && -1 !== winBlockIndex.indexOf(2, 0) 
+        && -1 !== winBlockIndex.indexOf(3, 0) 
+        && -1 !== winBlockIndex.indexOf(4, 0) 
+    ){
+        // 橫1
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(5, 0) 
+        && -1 !== winBlockIndex.indexOf(6, 0) 
+        && -1 !== winBlockIndex.indexOf(7, 0) 
+        && -1 !== winBlockIndex.indexOf(8, 0) 
+        && -1 !== winBlockIndex.indexOf(9, 0) 
+    ){
+        // 橫2
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(10, 0) 
+        && -1 !== winBlockIndex.indexOf(11, 0) 
+        && -1 !== winBlockIndex.indexOf(12, 0) 
+        && -1 !== winBlockIndex.indexOf(13, 0) 
+        && -1 !== winBlockIndex.indexOf(14, 0) 
+    ){
+        // 橫3
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(15, 0) 
+        && -1 !== winBlockIndex.indexOf(16, 0) 
+        && -1 !== winBlockIndex.indexOf(17, 0) 
+        && -1 !== winBlockIndex.indexOf(18, 0) 
+        && -1 !== winBlockIndex.indexOf(19, 0) 
+    ){
+        // 橫4
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(20, 0) 
+        && -1 !== winBlockIndex.indexOf(21, 0) 
+        && -1 !== winBlockIndex.indexOf(22, 0) 
+        && -1 !== winBlockIndex.indexOf(23, 0) 
+        && -1 !== winBlockIndex.indexOf(24, 0) 
+    ){
+        // 橫5
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(0, 0) 
+        && -1 !== winBlockIndex.indexOf(5, 0) 
+        && -1 !== winBlockIndex.indexOf(10, 0) 
+        && -1 !== winBlockIndex.indexOf(15, 0) 
+        && -1 !== winBlockIndex.indexOf(20, 0) 
+    ){
+        // 直1
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(1, 0) 
+        && -1 !== winBlockIndex.indexOf(6, 0) 
+        && -1 !== winBlockIndex.indexOf(11, 0) 
+        && -1 !== winBlockIndex.indexOf(16, 0) 
+        && -1 !== winBlockIndex.indexOf(21, 0) 
+    ){
+        // 直2
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(2, 0) 
+        && -1 !== winBlockIndex.indexOf(7, 0) 
+        && -1 !== winBlockIndex.indexOf(12, 0) 
+        && -1 !== winBlockIndex.indexOf(17, 0) 
+        && -1 !== winBlockIndex.indexOf(22, 0) 
+    ){
+        // 直3
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(3, 0) 
+        && -1 !== winBlockIndex.indexOf(8, 0) 
+        && -1 !== winBlockIndex.indexOf(13, 0) 
+        && -1 !== winBlockIndex.indexOf(18, 0) 
+        && -1 !== winBlockIndex.indexOf(23, 0) 
+    ){
+        // 直4
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(4, 0) 
+        && -1 !== winBlockIndex.indexOf(9, 0) 
+        && -1 !== winBlockIndex.indexOf(14, 0) 
+        && -1 !== winBlockIndex.indexOf(19, 0) 
+        && -1 !== winBlockIndex.indexOf(24, 0) 
+    ){
+        // 直5
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(0, 0) 
+        && -1 !== winBlockIndex.indexOf(6, 0) 
+        && -1 !== winBlockIndex.indexOf(12, 0) 
+        && -1 !== winBlockIndex.indexOf(18, 0) 
+        && -1 !== winBlockIndex.indexOf(24, 0) 
+    ){
+        // 斜 \
+        line++;
+    }
+    
+    if( 
+        -1 !== winBlockIndex.indexOf(4, 0) 
+        && -1 !== winBlockIndex.indexOf(8, 0) 
+        && -1 !== winBlockIndex.indexOf(12, 0) 
+        && -1 !== winBlockIndex.indexOf(16, 0) 
+        && -1 !== winBlockIndex.indexOf(20, 0) 
+    ){
+        // 斜 /
+        line++;
+    }
+    
+    return line;
+}
+
 // 兌獎結果顯示元件
 var showComponent = function()
 {
-    console.log('showComponent');
+    //console.log('showComponent');
     
     // 取得目前已經設定的 開獎號碼
     var openNumStr = stringTrim(localStorage["openNumStr"]);
@@ -92,9 +232,11 @@ var showComponent = function()
         var currentValueStr = stringTrim(currentValue);
         var currentValueAry = stringToArray(currentValueStr, config.space);
         
-        console.log(currentValueAry);
+        //console.log(currentValueAry);
         if( config.oneBlockNum * config.oneBlockNum  == currentValueAry.length ){
-            // 驗證卷的數字數量必須唯一張卷的數量，不然無視
+            // 驗證卷的數字數量必須為一張卷的數量，不然無視
+            
+            var winBlockIndex = [];
             
             // 組合成 5*5 的table
             var table = $('<table></table>').attr('border', 1);
@@ -107,17 +249,10 @@ var showComponent = function()
                     
                     var index = ( y - 1 ) * config.oneBlockNum + x - 1;
                     var td = $('<td></td>');
-                    
                     var thisBlockNum = currentValueAry[index];
-                    
-                    console.log(thisBlockNum);
-                    console.log(typeof thisBlockNum);
-                    console.log(openNumAry);
-                    console.log( openNumAry.indexOf(thisBlockNum, 0) );
-                    
-                    
-                    if( -1 !== openNumAry.indexOf(thisBlockNum, 1) ){
+                    if( -1 !== openNumAry.indexOf(thisBlockNum, 0) ){
                         td.addClass('red');
+                        winBlockIndex.push(index);
                     }
                     
                     td.html(thisBlockNum);
@@ -127,8 +262,18 @@ var showComponent = function()
                 table.append(tr);
             }
             
+            var line = countLine(winBlockIndex);
+            
+            var span = $('<span></span>').append("(" + line +")");
+            if(line >= 5){
+                span.addClass('blink_me');
+            }
+            
             // 顯示在 list 上
-            showBlock.append($('<li></li>').css('white-space','normal').html(table));
+            var li = $('<li></li>');
+            li.css('white-space','normal').html(table).append(span);
+            
+            showBlock.append(li);
         }
     }, this)
     
@@ -212,9 +357,11 @@ var listChooseNumComponent = function()
     chooseNumAry.forEach(function(currentValue){
         
         var currentValueStr = stringTrim(currentValue);
-        var currentValueAry = stringToArray(currentValueStr, config.space);
-        
-        chooseBlock.append($('<li></li>').css('white-space','normal').html( "(" + currentValueAry.length + ")" + currentValue ));
+        if('' != currentValueStr){
+            var currentValueAry = stringToArray(currentValueStr, config.space);
+            
+            chooseBlock.append($('<li></li>').css('white-space','normal').html( "(" + currentValueAry.length + ")" + currentValue ));
+        }
     }, this)
     
     chooseBlock.listview('refresh');
