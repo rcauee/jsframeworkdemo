@@ -23,7 +23,8 @@
     font-weight: bold;
 }
 .red{
-    color: red;
+    /*color: red;*/
+    background-color: red;
 }
 .blink_me {
   animation: blinker 1s linear infinite;
@@ -38,6 +39,7 @@
 <script type="text/javascript">
 var config = {
     maxNum : 25,
+    oneBlockNum : 5,
     space : ' ',
     comma : ',',
     brn : "\n"
@@ -66,11 +68,71 @@ var arrayToString = function(array, separator){
     return stringOfArray;
 }
 
-//
+// 兌獎結果顯示元件
 var showComponent = function()
 {
     console.log('showComponent');
     
+    // 取得目前已經設定的 開獎號碼
+    var openNumStr = stringTrim(localStorage["openNumStr"]);
+    var openNumAry = stringToArray(openNumStr, config.space);
+    
+    // 取得目前已經設定的 下注號碼
+    var chooseNumStr = stringTrim(localStorage["chooseNumStr"]);
+    var chooseNumAry = stringToArray(chooseNumStr, config.brn);
+    
+    // 使用 choose 來畫 樂透格子
+    
+    var showBlock = $('#showBlock');
+    showBlock.empty();
+    
+    chooseNumAry.forEach(function(currentValue){
+        // 把內容數字 拆解
+        //console.log(currentValue);
+        var currentValueStr = stringTrim(currentValue);
+        var currentValueAry = stringToArray(currentValueStr, config.space);
+        
+        console.log(currentValueAry);
+        if( config.oneBlockNum * config.oneBlockNum  == currentValueAry.length ){
+            // 驗證卷的數字數量必須唯一張卷的數量，不然無視
+            
+            // 組合成 5*5 的table
+            var table = $('<table></table>').attr('border', 1);
+            
+            for(y=1;y<=config.oneBlockNum;y++){
+                
+                var tr = $('<tr></tr>');
+                
+                for(x=1;x<=config.oneBlockNum;x++){
+                    
+                    var index = ( y - 1 ) * config.oneBlockNum + x - 1;
+                    var td = $('<td></td>');
+                    
+                    var thisBlockNum = currentValueAry[index];
+                    
+                    console.log(thisBlockNum);
+                    console.log(typeof thisBlockNum);
+                    console.log(openNumAry);
+                    console.log( openNumAry.indexOf(thisBlockNum, 0) );
+                    
+                    
+                    if( -1 !== openNumAry.indexOf(thisBlockNum, 1) ){
+                        td.addClass('red');
+                    }
+                    
+                    td.html(thisBlockNum);
+                    
+                    tr.append(td);
+                }
+                table.append(tr);
+            }
+            
+            // 顯示在 list 上
+            showBlock.append($('<li></li>').css('white-space','normal').html(table));
+        }
+    }, this)
+    
+    showBlock.listview('refresh');
 }
 
 // 建立開獎號碼元件
@@ -81,7 +143,8 @@ var createOpenComponent = function()
     var openNumAry = stringToArray(openNumStr, config.space);
     
     // 清空
-    $('#numBlock').empty();
+    var openBlock = $('#openBlock');
+    openBlock.empty();
     // 建立 1~maxNum 按鈕於畫面
     for(i=1;i<=config.maxNum;i++){
         
@@ -103,7 +166,7 @@ var createOpenComponent = function()
         divClass = (0 == i % 5)?'ui-block-e':divClass;
         div.addClass(divClass);
         
-        $('#numBlock').append(div);
+        openBlock.append(div);
     }
     
     // 綁定 開獎功能
@@ -128,23 +191,30 @@ var createOpenComponent = function()
         }
         
         openNumStr = arrayToString(openNumAry, config.space)
-        
         localStorage.openNumStr = openNumStr;
+        
+        // 重畫 顯示區塊
+        showComponent();
     })
 }
 
-// 建立項目
+// 下注項目
 var listChooseNumComponent = function()
 {
-    var openNumStr = stringTrim(localStorage["chooseNumStr"]);
-    var openNumAry = stringToArray(openNumStr, config.brn);
+    // 取得目前已經設定的 下注號碼
+    var chooseNumStr = stringTrim(localStorage["chooseNumStr"]);
+    var chooseNumAry = stringToArray(chooseNumStr, config.brn);
     
     var chooseBlock = $('#chooseBlock');
     
     chooseBlock.empty();
     
-    openNumAry.forEach(function(currentValue){
-        chooseBlock.append($('<li></li>').css('white-space','normal').html(currentValue));
+    chooseNumAry.forEach(function(currentValue){
+        
+        var currentValueStr = stringTrim(currentValue);
+        var currentValueAry = stringToArray(currentValueStr, config.space);
+        
+        chooseBlock.append($('<li></li>').css('white-space','normal').html( "(" + currentValueAry.length + ")" + currentValue ));
     }, this)
     
     chooseBlock.listview('refresh');
@@ -154,7 +224,7 @@ $(document).ready(init);    // 網頁完成後，呼叫 init
 function init(){
     
     $(document).on('pagebeforeshow', '#main', function(){
-        //
+        // 顯示 元件
         showComponent();
         
         // 建立 開獎 元件
@@ -172,6 +242,7 @@ function init(){
     $('#storageSave').on('click', function(){
         // 
         localStorage.chooseNumStr = $('#inputArea').val();
+        showComponent();
         listChooseNumComponent();
     });
     $('#storageLoad').on('click', function(){
@@ -181,6 +252,8 @@ function init(){
     });
     $('#storageClear').on('click', function(){
         localStorage.clear();
+        showComponent();
+        createOpenComponent();
         listChooseNumComponent();
     });
     $('#storageTest').on('click', function(){
@@ -226,7 +299,7 @@ function init(){
             <div id="two" class="center">
                 把所有號碼列出，點亮為開 點暗為未開
                 <br>
-                <div class="ui-grid-d" id="numBlock">
+                <div class="ui-grid-d" id="openBlock">
                     <!--開獎號碼-->
                 </div>
                 
@@ -249,43 +322,6 @@ function init(){
             </div>
             
         </div>
-        <!--
-        <div class="ui-bar center">
-            <span id="ans"></span>
-            <span id="boom"></span>
-            <span id="info" class="red"></span>
-        </div>
-        
-        <div class="ui-grid-d">
-            <div class="ui-block-a"></div>
-            <div class="ui-block-b right red" id="num_min">min</div>
-            <div class="ui-block-c center big" id="num_now">now</div>
-            <div class="ui-block-d left red" id="num_max">max</div>
-            <div class="ui-block-e"></div>
-        </div>
-        
-        <div class="" id="">
-            <div class="ui-grid-d">
-                <div class="ui-block-a"><input type="button" value="1" class="setNum"></div>
-                <div class="ui-block-b"><input type="button" value="2" class="setNum"></div>
-                <div class="ui-block-c"><input type="button" value="3" class="setNum"></div>
-                <div class="ui-block-d"><input type="button" value="4" class="setNum"></div>
-                <div class="ui-block-e"><input type="button" value="5" class="setNum"></div>
-            </div>
-            <div class="ui-grid-d">
-                <div class="ui-block-a"><input type="button" value="6" class="setNum"></div>
-                <div class="ui-block-b"><input type="button" value="7" class="setNum"></div>
-                <div class="ui-block-c"><input type="button" value="8" class="setNum"></div>
-                <div class="ui-block-d"><input type="button" value="9" class="setNum"></div>
-                <div class="ui-block-e"><input type="button" value="0" class="setNum"></div>
-            </div>
-            
-            <div class="ui-grid-a">
-                <div class="ui-block-a"><input type="button" value="reset" id="resetNumber"></div>
-                <div class="ui-block-b"><input type="button" value="go" id="sendNumber"></div>
-            </div>
-        </div>
-        -->
     </div>
 </div>
 
