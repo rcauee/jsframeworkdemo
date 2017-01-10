@@ -29,7 +29,7 @@
   animation: blinker 1s linear infinite;
 }
 
-@keyframes blinker {  
+@keyframes blinker {
   50% { opacity: 0; }
 }
 
@@ -43,12 +43,26 @@ var config = {
     brn : "\n"
 }
 
+var stringTrim = function(string){
+    var trimOfString = '';
+    if( 'string' == typeof string ){
+        trimOfString = string.trim();
+    }
+    return trimOfString;
+}
+
 var stringToArray = function(string, separator) {
-    var arrayOfStrings = string.split(separator);
+    var arrayOfStrings = [];
+    if( 'string' == typeof string ){
+        arrayOfStrings = string.split(separator);
+    }
     return arrayOfStrings;
 }
 var arrayToString = function(array, separator){
-    var stringOfArray = array.join(separator);
+    var stringOfArray = '';
+    if( 'object' == typeof array ){
+        stringOfArray = array.join(separator);
+    }
     return stringOfArray;
 }
 
@@ -63,7 +77,7 @@ var showComponent = function()
 var createOpenComponent = function()
 {
     // 取得目前已經設定的 開獎號碼
-    var openNumStr = localStorage["openNumStr"].trim();
+    var openNumStr = stringTrim(localStorage["openNumStr"]);
     var openNumAry = stringToArray(openNumStr, config.space);
     
     // 清空
@@ -122,7 +136,7 @@ var createOpenComponent = function()
 // 建立項目
 var listChooseNumComponent = function()
 {
-    var openNumStr = localStorage["chooseNumStr"].trim();
+    var openNumStr = stringTrim(localStorage["chooseNumStr"]);
     var openNumAry = stringToArray(openNumStr, config.brn);
     
     var chooseBlock = $('#chooseBlock');
@@ -166,8 +180,7 @@ function init(){
         listChooseNumComponent();
     });
     $('#storageClear').on('click', function(){
-        localStorage.chooseNumStr = '';
-        localStorage.openNumStr = '';
+        localStorage.clear();
         listChooseNumComponent();
     });
     $('#storageTest').on('click', function(){
