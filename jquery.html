@@ -250,7 +250,7 @@ var showComponent = function()
                     var index = ( y - 1 ) * config.oneBlockNum + x - 1;
                     var td = $('<td></td>');
                     var thisBlockNum = currentValueAry[index];
-                    if( -1 !== openNumAry.indexOf(thisBlockNum, 0) ){
+                    if( -1 !== openNumAry.indexOf(thisBlockNum, 0) || 'f' == thisBlockNum ){
                         td.addClass('red');
                         winBlockIndex.push(index);
                     }
@@ -436,7 +436,7 @@ function init(){
             </div>
             
             <div id="one" class="">
-                依照 web storage 處理顯示資料
+                依照設定處理彩卷顯示
                 <br>
                 <ul data-role="listview" data-inset="true" id="showBlock">
                     <!--區塊顯示-->
@@ -453,7 +453,7 @@ function init(){
             </div>
             
             <div id="three">
-                設定自己的號碼進 web storage
+                設定自己的號碼進 web storage ( 由左至右,由上至下,依序將號碼填入後儲存 ) ( 多張請換行,FREE 格用 f )
                 <textarea id="inputArea" ></textarea>
                 <div class="ui-grid-c">
                     <div class="ui-block-a"><button id="storageSave">儲存</button></div>
