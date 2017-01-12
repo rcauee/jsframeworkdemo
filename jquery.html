@@ -68,6 +68,19 @@ var arrayToString = function(array, separator){
     return stringOfArray;
 }
 
+var audioPlay = function(){
+    var audioBlock = document.getElementById("audioBlock");
+    audioBlock.load();
+    audioBlock.play();
+}
+var audioPause = function(){
+    var audioBlock = document.getElementById("audioBlock");
+    if(1 == audioBlock.played.length){
+        audioBlock.pause();
+    }
+}
+
+
 // 計算連線
 var countLine = function(winBlockIndex)
 {
@@ -267,6 +280,8 @@ var showComponent = function()
             var span = $('<span></span>').append("(" + line +")");
             if(line >= 5){
                 span.addClass('blink_me');
+                audioPlay();
+                setTimeout(audioPause, 60000);
             }
             
             // 顯示在 list 上
@@ -403,12 +418,24 @@ function init(){
         createOpenComponent();
         listChooseNumComponent();
     });
-    $('#storageTest').on('click', function(){
-        if (typeof(Storage) !== "undefined") {
-            alert('Code for localStorage/sessionStorage.');
-        } else {
-            alert('Sorry! No Web Storage support..');
-        }
+    
+
+    $(document).on('pagebeforeshow', '#info', function(){
+        $('#storageTest').on('click', function(){
+            if (typeof(Storage) !== "undefined") {
+                alert('Code for localStorage/sessionStorage.');
+            } else {
+                alert('Sorry! No Web Storage support..');
+            }
+        });
+
+        $('#musicPlay').on('click', function(){
+            audioPlay();
+        });
+
+        $('#musicStopWhenPlay').on('click', function(){
+            audioPause();
+        });
     });
 }
 
@@ -455,11 +482,10 @@ function init(){
             <div id="three">
                 設定自己的號碼進 web storage ( 由左至右,由上至下,依序將號碼填入後儲存 ) ( 多張請換行,FREE 格用 f )
                 <textarea id="inputArea" ></textarea>
-                <div class="ui-grid-c">
+                <div class="ui-grid-b">
                     <div class="ui-block-a"><button id="storageSave">儲存</button></div>
                     <div class="ui-block-b"><button id="storageLoad">載入</button></div>
                     <div class="ui-block-c"><button id="storageClear">清除</button></div>
-                    <div class="ui-block-d"><button id="storageTest">測試</button></div>
                 </div>
                 
                 <ul data-role="listview" data-inset="true" id="chooseBlock">
@@ -478,12 +504,20 @@ function init(){
             class="ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-carat-l">
             Back
         </a>
-        <h1>遊戲規則</h1>
+        <h1>INFO</h1>
     </div>
     <div data-role="content">
-        123
+        <div class="ui-grid-b">
+            <div class="ui-block-a"><button id="storageTest">儲存測試</button></div>
+            <div class="ui-block-b"><button id="musicPlay">聲音播放</button></div>
+            <div class="ui-block-c"><button id="musicStopWhenPlay">聲音停止</button></div>
+        </div>
     </div>
 
 </div>
+
+<audio id="audioBlock" loop>
+    <source src="FF7v.mp3" type="audio/mpeg">
+</audio>
 </body>
 </html>
