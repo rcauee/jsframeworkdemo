@@ -28,17 +28,25 @@
                     //console.log('BootstrapButton click!!');
                     this.props.clickFn();
                 }
+                btnClass(){
+                    return 'btn btn-lg ' + this.props.btnclass + ' btn-block';
+                }
                 render() {
                     // 建立元素
                     return React.createElement(
                         'button'
                         , {
                             type:'button'
-                            , className:'btn btn-lg ' + this.props.btnclass + ' btn-block'
+                            , className: this.btnClass()
                             , onClick : this.handleClick
                         }
                         , this.props.name
                     )
+                    /*
+                    return (
+                        <button type="button" className={this.btnClass()} onClick={this.handleClick}>{this.props.name}</button>
+                    );
+                    */
                 }
             }
             

@@ -86,7 +86,10 @@
                 // 按鈕元件
                 // <button-component show-text="{按鈕顯示}" button-class="{使用的 class 樣式}" on-click="{觸發按下時要呼叫的func}" ></button-component>
                 app.component('buttonComponent', {
-                    template: '<button type="button" class="btn btn-lg {{$ctrl.buttonClass}} btn-block" ng-click="$ctrl.guessNum()">{{$ctrl.showText}}</button>',
+                    template: '\
+                        <button type="button" class="btn btn-lg {{$ctrl.buttonClass}} btn-block" ng-click="$ctrl.guessNum()">\
+                            {{$ctrl.showText}}\
+                        </button>',
                     bindings: {
                         showText: '@',
                         buttonClass : '@',

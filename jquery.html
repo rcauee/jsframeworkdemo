@@ -40,6 +40,7 @@
 var config = {
     maxNum : 99,
     oneBlockNum : 5,
+    winLine : 5,
     space : ' ',
     comma : ',',
     brn : "\n"
@@ -84,139 +85,41 @@ var audioPause = function(){
 // 計算連線
 var countLine = function(winBlockIndex)
 {
+    // 設定中獎位置
+    var winAry = [
+        [0,1,2,3,4]         // 橫1
+        , [5,6,7,8,9]       // 橫2
+        , [10,11,12,13,14]  // 橫3
+        , [15,16,17,18,19]  // 橫4
+        , [20,21,22,23,24]  // 橫5
+        
+        , [0,5,10,15,20]    // 直1
+        , [1,6,11,16,21]    // 直2
+        , [2,7,12,17,22]    // 直3
+        , [3,8,13,18,23]    // 直4
+        , [4,9,14,19,24]    // 直5
+        
+        , [0,6,12,18,24]    // 斜 \
+        , [4,8,12,16,20]    // 斜 /
+    ]
     
+    // 循環處理中獎確認
     var line = 0;
-    if( 
-        -1 !== winBlockIndex.indexOf(0, 0) 
-        && -1 !== winBlockIndex.indexOf(1, 0) 
-        && -1 !== winBlockIndex.indexOf(2, 0) 
-        && -1 !== winBlockIndex.indexOf(3, 0) 
-        && -1 !== winBlockIndex.indexOf(4, 0) 
-    ){
-        // 橫1
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(5, 0) 
-        && -1 !== winBlockIndex.indexOf(6, 0) 
-        && -1 !== winBlockIndex.indexOf(7, 0) 
-        && -1 !== winBlockIndex.indexOf(8, 0) 
-        && -1 !== winBlockIndex.indexOf(9, 0) 
-    ){
-        // 橫2
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(10, 0) 
-        && -1 !== winBlockIndex.indexOf(11, 0) 
-        && -1 !== winBlockIndex.indexOf(12, 0) 
-        && -1 !== winBlockIndex.indexOf(13, 0) 
-        && -1 !== winBlockIndex.indexOf(14, 0) 
-    ){
-        // 橫3
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(15, 0) 
-        && -1 !== winBlockIndex.indexOf(16, 0) 
-        && -1 !== winBlockIndex.indexOf(17, 0) 
-        && -1 !== winBlockIndex.indexOf(18, 0) 
-        && -1 !== winBlockIndex.indexOf(19, 0) 
-    ){
-        // 橫4
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(20, 0) 
-        && -1 !== winBlockIndex.indexOf(21, 0) 
-        && -1 !== winBlockIndex.indexOf(22, 0) 
-        && -1 !== winBlockIndex.indexOf(23, 0) 
-        && -1 !== winBlockIndex.indexOf(24, 0) 
-    ){
-        // 橫5
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(0, 0) 
-        && -1 !== winBlockIndex.indexOf(5, 0) 
-        && -1 !== winBlockIndex.indexOf(10, 0) 
-        && -1 !== winBlockIndex.indexOf(15, 0) 
-        && -1 !== winBlockIndex.indexOf(20, 0) 
-    ){
-        // 直1
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(1, 0) 
-        && -1 !== winBlockIndex.indexOf(6, 0) 
-        && -1 !== winBlockIndex.indexOf(11, 0) 
-        && -1 !== winBlockIndex.indexOf(16, 0) 
-        && -1 !== winBlockIndex.indexOf(21, 0) 
-    ){
-        // 直2
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(2, 0) 
-        && -1 !== winBlockIndex.indexOf(7, 0) 
-        && -1 !== winBlockIndex.indexOf(12, 0) 
-        && -1 !== winBlockIndex.indexOf(17, 0) 
-        && -1 !== winBlockIndex.indexOf(22, 0) 
-    ){
-        // 直3
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(3, 0) 
-        && -1 !== winBlockIndex.indexOf(8, 0) 
-        && -1 !== winBlockIndex.indexOf(13, 0) 
-        && -1 !== winBlockIndex.indexOf(18, 0) 
-        && -1 !== winBlockIndex.indexOf(23, 0) 
-    ){
-        // 直4
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(4, 0) 
-        && -1 !== winBlockIndex.indexOf(9, 0) 
-        && -1 !== winBlockIndex.indexOf(14, 0) 
-        && -1 !== winBlockIndex.indexOf(19, 0) 
-        && -1 !== winBlockIndex.indexOf(24, 0) 
-    ){
-        // 直5
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(0, 0) 
-        && -1 !== winBlockIndex.indexOf(6, 0) 
-        && -1 !== winBlockIndex.indexOf(12, 0) 
-        && -1 !== winBlockIndex.indexOf(18, 0) 
-        && -1 !== winBlockIndex.indexOf(24, 0) 
-    ){
-        // 斜 \
-        line++;
-    }
-    
-    if( 
-        -1 !== winBlockIndex.indexOf(4, 0) 
-        && -1 !== winBlockIndex.indexOf(8, 0) 
-        && -1 !== winBlockIndex.indexOf(12, 0) 
-        && -1 !== winBlockIndex.indexOf(16, 0) 
-        && -1 !== winBlockIndex.indexOf(20, 0) 
-    ){
-        // 斜 /
-        line++;
-    }
+    var count;
+    // 分別列中獎位置
+    winAry.forEach(function(numAry, wini){
+        count = 0;
+        // 分別查詢該位置是否中獎
+        numAry.forEach(function(num, numi){
+            if(-1 !== winBlockIndex.indexOf(num, 0)){
+                count++
+            }
+        })
+        // 符合一行的數量就連線+1
+        if(config.oneBlockNum == count){
+            line++;
+        }
+    })
     
     return line;
 }
@@ -224,8 +127,6 @@ var countLine = function(winBlockIndex)
 // 兌獎結果顯示元件
 var showComponent = function()
 {
-    //console.log('showComponent');
-    
     // 取得目前已經設定的 開獎號碼
     var openNumStr = stringTrim(localStorage["openNumStr"]);
     var openNumAry = stringToArray(openNumStr, config.space);
@@ -235,17 +136,14 @@ var showComponent = function()
     var chooseNumAry = stringToArray(chooseNumStr, config.brn);
     
     // 使用 choose 來畫 樂透格子
-    
     var showBlock = $('#showBlock');
     showBlock.empty();
     
     chooseNumAry.forEach(function(currentValue){
         // 把內容數字 拆解
-        //console.log(currentValue);
         var currentValueStr = stringTrim(currentValue);
         var currentValueAry = stringToArray(currentValueStr, config.space);
         
-        //console.log(currentValueAry);
         if( config.oneBlockNum * config.oneBlockNum  == currentValueAry.length ){
             // 驗證卷的數字數量必須為一張卷的數量，不然無視
             
@@ -278,7 +176,7 @@ var showComponent = function()
             var line = countLine(winBlockIndex);
             
             var span = $('<span></span>').append("(" + line +")");
-            if(line >= 5){
+            if(line >= config.winLine){
                 span.addClass('blink_me');
                 audioPlay();
                 setTimeout(audioPause, 60000);

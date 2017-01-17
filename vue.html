@@ -208,7 +208,10 @@
 
             // button-component 元件 
             Vue.component('button-component', {
-                template:'<button type="button" class="btn btn-lg btn-block" v-on:click="click">{{buttonText}} {{buttonClass}}</button>',
+                template:'\
+                    <button type="button" class="btn btn-lg btn-block" v-on:click="click">\
+                        {{buttonText}} {{buttonClass}}\
+                    </button>',
                 props: {
                     buttonClass: {
                         type: String,
